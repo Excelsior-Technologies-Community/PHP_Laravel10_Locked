@@ -67,21 +67,21 @@
         </div>
 
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <strong>Success!</strong> {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <strong>Success!</strong> {{ session('success') }}
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert">
-                </button>
-            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+        </div>
         @endif
 
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <strong>Error!</strong> {{ session('error') }}
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <strong>Error!</strong> {{ session('error') }}
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert">
-                </button>
-            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+        </div>
         @endif
 
         <div class="row mb-4">
@@ -200,7 +200,7 @@
 
                             <th>Status</th>
 
-                            <th width="350">
+                            <th width="550">
                                 Actions
                             </th>
 
@@ -212,100 +212,107 @@
 
                         @forelse($posts as $post)
 
-                            <tr>
+                        <tr>
 
-                                <td>
-                                    {{ $posts->firstItem() + $loop->index }}
-                                </td>
+                            <td>
+                                {{ $posts->firstItem() + $loop->index }}
+                            </td>
 
-                                <td>
-                                    {{ $post->title }}
-                                </td>
+                            <td>
+                                {{ $post->title }}
+                            </td>
 
-                                <td>
-                                    {{ \Illuminate\Support\Str::limit($post->description, 50) }}
-                                </td>
+                            <td>
+                                {{ \Illuminate\Support\Str::limit($post->description, 50) }}
+                            </td>
 
-                                <td>
+                            <td>
+
+                                @if($post->isLocked())
+
+                                <span class="badge locked-badge">
+                                    🔒 Locked
+                                </span>
+
+                                @else
+
+                                <span class="badge unlocked-badge">
+                                    🔓 Unlocked
+                                </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex gap-2 flex-wrap">
+
+                                    <!-- View Button -->
+                                    <a href="{{ route('posts.show', $post) }}"
+                                        class="btn btn-info btn-sm btn-action">
+                                        View
+                                    </a>
+
+                                    <!-- History Button -->
+                                    <a href="{{ route('posts.history', $post) }}"
+                                        class="btn btn-dark btn-sm btn-action">
+                                        History
+                                    </a>
 
                                     @if($post->isLocked())
 
-                                        <span class="badge locked-badge">
-                                            🔒 Locked
-                                        </span>
+                                    <form method="POST" action="{{ route('posts.unlock', $post) }}">
+                                        @csrf
+                                        <button class="btn btn-success btn-sm btn-action">
+                                            Unlock
+                                        </button>
+                                    </form>
 
                                     @else
 
-                                        <span class="badge unlocked-badge">
-                                            🔓 Unlocked
-                                        </span>
+                                    <form method="POST" action="{{ route('posts.lock', $post) }}">
+                                        @csrf
+                                        <button class="btn btn-warning btn-sm btn-action">
+                                            Lock
+                                        </button>
+                                    </form>
+
+                                    <a href="{{ route('posts.edit', $post) }}"
+                                        class="btn btn-primary btn-sm btn-action">
+                                        Edit
+                                    </a>
 
                                     @endif
 
-                                </td>
+                                    <form method="POST"
+                                        action="{{ route('posts.destroy', $post) }}"
+                                        onsubmit="return confirm('Delete this post?')">
 
-                                <td>
+                                        @csrf
+                                        @method('DELETE')
 
-                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-danger btn-sm btn-action">
+                                            Delete
+                                        </button>
 
-                                        @if($post->isLocked())
+                                    </form>
 
-                                            <form method="POST" action="{{ route('posts.unlock', $post) }}">
+                                </div>
 
-                                                @csrf
+                            </td>
 
-                                                <button class="btn btn-success btn-sm btn-action">
-                                                    Unlock
-                                                </button>
-
-                                            </form>
-
-                                        @else
-
-                                            <form method="POST" action="{{ route('posts.lock', $post) }}">
-
-                                                @csrf
-
-                                                <button class="btn btn-warning btn-sm btn-action">
-                                                    Lock
-                                                </button>
-
-                                            </form>
-
-                                            <a href="{{ route('posts.edit', $post) }}"
-                                                class="btn btn-primary btn-sm btn-action">
-                                                Edit
-                                            </a>
-
-                                        @endif
-
-                                        <form method="POST" action="{{ route('posts.destroy', $post) }}"
-                                            onsubmit="return confirm('Delete this post?')">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button class="btn btn-danger btn-sm btn-action">
-                                                Delete
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
+                        </tr>
 
                         @empty
 
-                            <tr>
+                        <tr>
 
-                                <td colspan="5" class="text-center py-4">
-                                    No Posts Found
-                                </td>
+                            <td colspan="5" class="text-center py-4">
+                                No Posts Found
+                            </td>
 
-                            </tr>
+                        </tr>
 
                         @endforelse
 

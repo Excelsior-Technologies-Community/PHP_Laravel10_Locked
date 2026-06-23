@@ -96,17 +96,67 @@ class PostController extends Controller
 
     public function lock(Post $post)
     {
+
         $post->lock();
 
+        $post->histories()->create([
+
+            'action' => 'locked',
+
+            'reason' => 'Post locked for review'
+
+        ]);
+
         return back()
-            ->with('success', 'Post locked successfully.');
+            ->with(
+                'success',
+                'Post locked successfully.'
+            );
     }
 
     public function unlock(Post $post)
     {
+
         $post->unlock();
 
+        $post->histories()->create([
+
+            'action' => 'unlocked',
+
+            'reason' => 'Post approved'
+
+        ]);
+
         return back()
-            ->with('success', 'Post unlocked successfully.');
+            ->with(
+                'success',
+                'Post unlocked successfully.'
+            );
+    }
+
+    public function show(Post $post)
+    {
+
+        return view(
+            'posts.show',
+            compact('post')
+        );
+    }
+
+    public function history(Post $post)
+    {
+
+        $history = $post->histories()
+            ->orderBy('id', 'asc')
+            ->get();
+
+
+        return view(
+            'posts.history',
+            compact(
+                'post',
+                'history'
+            )
+        );
     }
 }
